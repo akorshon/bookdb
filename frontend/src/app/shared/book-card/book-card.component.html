@@ -1,0 +1,33 @@
+<a [routerLink]="['/books', book.id]" class="book-card text-decoration-none">
+  <div class="book-card-thumb">
+    <img
+      [src]="book.thumbnailUrl || 'https://placehold.co/200x280?text=No+Cover'"
+      [alt]="book.title"
+    />
+    @if (book.ratingCount > 0) {
+      <span class="book-card-rating-chip">★ {{ (book.averageRating || 0).toFixed(1) }}</span>
+    }
+  </div>
+  <div class="book-card-body">
+    <p class="book-card-title" [title]="book.title">{{ book.title }}</p>
+    <p class="book-card-author">{{ authorNames() }}</p>
+    @if (book.categories.length > 0) {
+      <div class="book-card-tags">
+        @for (c of book.categories.slice(0, 2); track c.id) {
+          <span class="book-card-tag">{{ c.name }}</span>
+        }
+        @if (book.categories.length > 2) {
+          <span class="book-card-tag">+{{ book.categories.length - 2 }}</span>
+        }
+      </div>
+    }
+    <div class="book-card-footer">
+      @if (book.ratingCount > 0) {
+        <app-star-rating [value]="book.averageRating || 0"></app-star-rating>
+        <small class="text-muted">({{ book.ratingCount }})</small>
+      } @else {
+        <small class="text-muted">No ratings yet</small>
+      }
+    </div>
+  </div>
+</a>

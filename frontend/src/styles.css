@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Re-tint Bootstrap's "primary" (and link) color to the indigo/purple brand used across the
+   app's custom-built pages, so plain `btn-primary`/`text-primary`/links/focus rings that don't
+   have a bespoke gradient class still match instead of showing Bootstrap's default blue. */
+:root {
+  --bs-primary: #4f46e5;
+  --bs-primary-rgb: 79, 70, 229;
+  --bs-primary-text-emphasis: #4338ca;
+  --bs-primary-bg-subtle: #eef2ff;
+  --bs-primary-border-subtle: #c7d2fe;
+  --bs-link-color: #4f46e5;
+  --bs-link-color-rgb: 79, 70, 229;
+  --bs-link-hover-color: #4338ca;
+  --bs-link-hover-color-rgb: 67, 56, 202;
+}
+
+.btn-primary {
+  --bs-btn-hover-bg: #4338ca;
+  --bs-btn-hover-border-color: #4338ca;
+  --bs-btn-active-bg: #4338ca;
+  --bs-btn-active-border-color: #4338ca;
+}

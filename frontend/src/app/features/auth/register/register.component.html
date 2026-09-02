@@ -1,0 +1,84 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="text-center mb-4">
+      <div class="auth-icon text-white">📚</div>
+      <h2 class="fw-bold mb-1">Create your account</h2>
+      <p class="text-muted mb-0">Join to submit books, rate, and leave reviews.</p>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger py-2 small">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label class="form-label small fw-semibold text-secondary">Display name</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+              <circle cx="8" cy="5" r="2.5" />
+              <path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            name="displayName"
+            placeholder="Jane Doe"
+            [(ngModel)]="displayName"
+            required
+            autofocus
+          />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-semibold text-secondary">Email</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+              <rect x="1.5" y="3" width="13" height="10" rx="1.5" />
+              <path d="M2 4l6 5 6-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <input
+            type="email"
+            class="form-control"
+            name="email"
+            placeholder="you@example.com"
+            [(ngModel)]="email"
+            required
+          />
+        </div>
+      </div>
+      <div class="mb-2">
+        <label class="form-label small fw-semibold text-secondary">Password</label>
+        <div class="input-group auth-input-group">
+          <span class="input-group-text">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" />
+              <path d="M5 7V4.5a3 3 0 0 1 6 0V7" stroke-linecap="round" />
+            </svg>
+          </span>
+          <input
+            type="password"
+            class="form-control"
+            name="password"
+            placeholder="At least 8 characters"
+            [(ngModel)]="password"
+            required
+            minlength="8"
+          />
+        </div>
+      </div>
+      <div class="form-text mb-3">At least 8 characters.</div>
+
+      <button type="submit" class="btn btn-primary auth-btn w-100 py-2 fw-semibold" [disabled]="loading()">
+        {{ loading() ? 'Creating account...' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="mt-4 mb-0 text-center text-muted">
+      Already have an account? <a routerLink="/login" class="fw-semibold text-decoration-none">Log in</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,147 @@
+.catalog-page {
+  min-height: calc(100vh - 76px);
+  padding: 2.5rem 0 3rem;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.08), transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(236, 72, 153, 0.06), transparent 45%),
+    #f8f9fb;
+}
+
+.catalog-header {
+  margin-bottom: 1.5rem;
+}
+
+.catalog-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  box-shadow: 0 10px 20px -8px rgba(99, 102, 241, 0.55);
+}
+
+.catalog-search {
+  display: flex;
+  gap: 0.6rem;
+  max-width: 640px;
+  margin-bottom: 2rem;
+}
+
+.catalog-search-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0 0.9rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.catalog-search-input:focus-within {
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.catalog-search-icon {
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.catalog-search-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.65rem 0;
+  background: transparent;
+  font-size: 0.95rem;
+}
+
+.catalog-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.catalog-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.catalog-result-count {
+  font-size: 0.85rem;
+}
+
+.catalog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 4rem 2rem;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.06),
+    0 12px 28px -12px rgba(16, 24, 40, 0.12);
+}
+
+.catalog-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-section {
+  margin-bottom: 2.5rem;
+}
+
+.catalog-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid #7c3aed;
+}
+
+.catalog-section-header h4 {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.catalog-section-count {
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.category-row {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.category-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.category-row::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.catalog-pagination .page-link {
+  border: none;
+  color: #4f46e5;
+  margin: 0 0.2rem;
+  border-radius: 0.5rem;
+}
+
+.catalog-pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+}

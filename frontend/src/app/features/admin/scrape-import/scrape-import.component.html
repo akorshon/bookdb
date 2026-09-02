@@ -1,0 +1,37 @@
+<div class="container">
+  <h2 class="mb-4">Import scrape data</h2>
+  <p class="text-muted">
+    Upload a JSON export produced by the <code>bookdbscraper</code> tool (rokomari.com or
+    boitoi.com.bd) to add or update its books and authors in the catalog.
+  </p>
+
+  <div class="mb-3">
+    <input type="file" class="form-control" accept=".json" (change)="onFileSelected($event)" />
+  </div>
+
+  <button class="btn btn-primary" [disabled]="!selectedFile || loading()" (click)="import()">
+    {{ loading() ? 'Importing...' : 'Import' }}
+  </button>
+
+  @if (error()) {
+    <div class="alert alert-danger mt-3">{{ error() }}</div>
+  }
+
+  @if (summary(); as s) {
+    <div class="alert alert-success mt-3">
+      Authors: {{ s.authorsCreated }} created, {{ s.authorsUpdated }} updated.
+      Books: {{ s.booksCreated }} created, {{ s.booksUpdated }} updated.
+    </div>
+
+    @if (s.errors.length > 0) {
+      <div class="alert alert-warning">
+        <p class="mb-2">{{ s.errors.length }} row(s) failed:</p>
+        <ul class="mb-0">
+          @for (err of s.errors; track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</div>

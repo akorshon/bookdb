@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-md navbar-light bg-white app-navbar mb-4">
+  <div class="container">
+    <a class="navbar-brand app-navbar-brand" routerLink="/">📚 Book Database</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navContent"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navContent">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+            >Books</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/authors" routerLinkActive="active">Authors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/developers" routerLinkActive="active">API</a>
+        </li>
+        @if (auth.isLoggedIn()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/my-books" routerLinkActive="active">My Books</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/my-reading-list" routerLinkActive="active">My Reading List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/my-authors" routerLinkActive="active">My Authors</a>
+          </li>
+        }
+        @if (auth.isAdmin()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/pending" routerLinkActive="active">Pending Books</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/pending-authors" routerLinkActive="active">Pending Authors</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users" routerLinkActive="active">Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/scrape-import" routerLinkActive="active">Import Scrape</a>
+          </li>
+        }
+      </ul>
+      <ul class="navbar-nav align-items-md-center">
+        @if (auth.isLoggedIn()) {
+          <li class="nav-item d-flex align-items-center">
+            <span class="app-navbar-user me-3">{{ auth.currentUser()?.displayName }}</span>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-secondary btn-sm" (click)="logout()">Log out</button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="btn btn-outline-primary btn-sm me-2" routerLink="/login">Log in</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm app-navbar-cta" routerLink="/register">Register</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>

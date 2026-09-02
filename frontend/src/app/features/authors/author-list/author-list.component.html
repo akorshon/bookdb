@@ -1,0 +1,57 @@
+<div class="authors-page">
+  <div class="container">
+    <div class="authors-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="authors-icon">✍️</div>
+        <div>
+          <h2 class="mb-0">Authors</h2>
+          <p class="text-muted mb-0">Discover authors and browse everything they've written.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="authors-search">
+      <span class="authors-search-icon">🔍</span>
+      <input
+        type="search"
+        placeholder="Search authors... (also supports বাংলা)"
+        [(ngModel)]="query"
+        name="query"
+      />
+    </div>
+
+    @if (loading()) {
+      <div class="authors-empty">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-3 mb-0">Loading authors...</p>
+      </div>
+    } @else if (filtered().length === 0) {
+      <div class="authors-empty">
+        <div class="authors-empty-icon">🔍</div>
+        <h5 class="mb-1">No authors found</h5>
+        <p class="text-muted mb-0">Try a different name or spelling.</p>
+      </div>
+    } @else {
+      <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
+        @for (a of filtered(); track a.id) {
+          <div class="col">
+            <a [routerLink]="['/authors', a.id]" class="author-card">
+              <div class="author-card-thumb">
+                <img
+                  [src]="a.imageUrl || 'https://placehold.co/150x150?text=No+Photo'"
+                  [alt]="a.name"
+                />
+              </div>
+              <div class="author-card-body">
+                <p class="author-card-name" [title]="a.name">{{ a.name }}</p>
+                @if (a.nameNative) {
+                  <p class="author-card-native" [title]="a.nameNative">{{ a.nameNative }}</p>
+                }
+              </div>
+            </a>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

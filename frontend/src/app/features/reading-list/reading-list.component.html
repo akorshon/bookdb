@@ -1,0 +1,47 @@
+<div class="reading-list-page">
+  <div class="container">
+    <div class="reading-list-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="reading-list-icon">🔖</div>
+        <div>
+          <h2 class="mb-0">My Reading List</h2>
+          <p class="text-muted mb-0">Books you're planning to read, reading now, or have finished.</p>
+        </div>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="reading-list-empty">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-3 mb-0">Loading your reading list...</p>
+      </div>
+    } @else if (isEmpty()) {
+      <div class="reading-list-empty">
+        <div class="reading-list-empty-icon">🔖</div>
+        <h5 class="mb-1">Your reading list is empty</h5>
+        <p class="text-muted mb-3">
+          Visit a book's page and choose "Want to Read", "Currently Reading", or "Read" to add it here.
+        </p>
+        <a class="btn btn-primary reading-list-btn" routerLink="/">Browse books</a>
+      </div>
+    } @else {
+      @for (section of sections(); track section.status) {
+        @if (section.entries.length > 0) {
+          <div class="reading-list-section">
+            <div class="reading-list-section-header">
+              <h4 class="mb-0">{{ section.icon }} {{ section.label }}</h4>
+              <span class="reading-list-section-count">{{ section.entries.length }} book(s)</span>
+            </div>
+            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
+              @for (entry of section.entries; track entry.id) {
+                <div class="col">
+                  <app-book-card [book]="entry.book"></app-book-card>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<div class="author-form-page">
+  <div class="container" style="max-width: 640px;">
+    <div class="author-form-header">
+      <div class="author-form-icon">✍️</div>
+      <div>
+        <h2 class="mb-0">{{ authorId ? 'Edit author' : 'Submit a new author' }}</h2>
+        <p class="text-muted mb-0">
+          {{
+            authorId
+              ? 'Update the details below.'
+              : "Fill in what you know - it'll be reviewed before it goes live."
+          }}
+        </p>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+
+    <div class="author-form-card">
+      <form (ngSubmit)="save()">
+        <div class="mb-3">
+          <label class="form-label">Name *</label>
+          <input type="text" class="form-control" name="name" [(ngModel)]="form.name" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Native name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="nameNative"
+            [(ngModel)]="form.nameNative"
+            placeholder="e.g. হুমায়ূন আহমেদ"
+          />
+          <div class="form-text">Optional - the author's name in their native script, if different.</div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" name="bio" rows="5" [(ngModel)]="form.bio"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary author-form-btn" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save' }}
+        </button>
+        <a routerLink="/my-authors" class="btn btn-outline-secondary ms-2">Cancel</a>
+      </form>
+
+      @if (authorId) {
+        <hr class="my-4" />
+        <h5 class="mb-3">Photo</h5>
+        <div class="author-form-photo">
+          <img
+            [src]="author()?.imageUrl || 'https://placehold.co/120x150?text=No+Photo'"
+            class="author-form-photo-preview"
+            alt="Photo"
+          />
+          <div>
+            <input type="file" class="form-control" accept="image/*" (change)="onPhotoSelected($event)" />
+            @if (uploadingPhoto()) {
+              <small class="text-muted d-block mt-1">Uploading...</small>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

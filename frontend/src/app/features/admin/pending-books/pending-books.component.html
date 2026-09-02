@@ -1,0 +1,35 @@
+<div class="container">
+  <h2 class="mb-4">Pending Books</h2>
+
+  @if (loading()) {
+    <p class="text-muted">Loading...</p>
+  } @else if (books().length === 0) {
+    <p class="text-muted">Nothing pending review.</p>
+  } @else {
+    @for (book of books(); track book.id) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a [routerLink]="['/books', book.id]">{{ book.title }}</a>
+          </h5>
+          <p class="card-subtitle text-muted mb-2">
+            by {{ authorNames(book) }} &middot; submitted by {{ book.submittedByDisplayName }}
+          </p>
+          <p class="card-text">{{ book.summary }}</p>
+          <div class="d-flex gap-2 align-items-start">
+            <button class="btn btn-success btn-sm" (click)="approve(book)">Approve</button>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              style="max-width: 300px;"
+              placeholder="Rejection reason"
+              [(ngModel)]="rejectReasons[book.id]"
+              name="reason-{{ book.id }}"
+            />
+            <button class="btn btn-danger btn-sm" (click)="reject(book)">Reject</button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

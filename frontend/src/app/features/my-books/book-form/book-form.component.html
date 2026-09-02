@@ -1,0 +1,103 @@
+<div class="book-form-page">
+  <div class="container" style="max-width: 640px;">
+    <div class="book-form-header">
+      <div class="book-form-icon">📖</div>
+      <div>
+        <h2 class="mb-0">{{ bookId ? 'Edit book' : 'Submit a new book' }}</h2>
+        <p class="text-muted mb-0">
+          {{ bookId ? 'Update the details below.' : "Fill in what you know - it'll be reviewed before it goes live." }}
+        </p>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+
+    <div class="book-form-card">
+      <form (ngSubmit)="save()">
+        <div class="mb-3">
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-control" name="title" [(ngModel)]="form.title" required />
+        </div>
+        <div class="mb-3 position-relative">
+          <label class="form-label">Author(s) *</label>
+          <input
+            #authorsInput
+            type="text"
+            class="form-control"
+            name="authorNames"
+            autocomplete="off"
+            [(ngModel)]="authorsText"
+            (input)="onAuthorsInput($event)"
+            (keydown)="onAuthorsKeydown($event)"
+            (blur)="hideAuthorSuggestions()"
+            placeholder="e.g. Jane Doe, John Smith"
+            required
+          />
+          @if (showAuthorSuggestions()) {
+            <div class="dropdown-menu show w-100 book-form-suggestions">
+              @for (a of authorSuggestions(); track a.id; let i = $index) {
+                <button
+                  type="button"
+                  class="dropdown-item"
+                  [class.active]="i === activeSuggestionIndex()"
+                  (mousedown)="$event.preventDefault(); selectAuthorSuggestion(a.name)"
+                >
+                  {{ a.name }}
+                  @if (a.nameNative) {
+                    <span class="text-muted small ms-1">{{ a.nameNative }}</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+          <div class="form-text">Comma-separated for co-authors. New authors are created automatically.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Summary</label>
+          <textarea class="form-control" name="summary" rows="5" [(ngModel)]="form.summary"></textarea>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Categories</label>
+          <input
+            type="text"
+            class="form-control"
+            name="categories"
+            list="known-categories"
+            [(ngModel)]="categoriesText"
+            placeholder="e.g. Fiction, Fantasy, Romance"
+          />
+          <datalist id="known-categories">
+            @for (c of knownCategories(); track c.id) {
+              <option [value]="c.name"></option>
+            }
+          </datalist>
+          <div class="form-text">Comma-separated. New categories are created automatically.</div>
+        </div>
+        <button type="submit" class="btn btn-primary book-form-btn" [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save' }}
+        </button>
+        <a routerLink="/my-books" class="btn btn-outline-secondary ms-2">Cancel</a>
+      </form>
+
+      @if (bookId) {
+        <hr class="my-4" />
+        <h5 class="mb-3">Cover image</h5>
+        <div class="book-form-cover">
+          <img
+            [src]="book()?.thumbnailUrl || 'https://placehold.co/120x160?text=No+Cover'"
+            class="book-form-cover-preview"
+            alt="Cover"
+          />
+          <div>
+            <input type="file" class="form-control" accept="image/*" (change)="onCoverSelected($event)" />
+            @if (uploadingCover()) {
+              <small class="text-muted d-block mt-1">Uploading...</small>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

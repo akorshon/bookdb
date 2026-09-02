@@ -1,0 +1,43 @@
+<div class="container">
+  <h2 class="mb-4">Users</h2>
+
+  @if (loading()) {
+    <p class="text-muted">Loading...</p>
+  } @else {
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Display name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.displayName }}</td>
+            <td><span class="badge text-bg-secondary">{{ user.role }}</span></td>
+            <td>
+              @if (user.enabled) {
+                <span class="badge text-bg-success">Enabled</span>
+              } @else {
+                <span class="badge text-bg-danger">Disabled</span>
+              }
+            </td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-secondary me-2" (click)="toggleEnabled(user)">
+                {{ user.enabled ? 'Disable' : 'Enable' }}
+              </button>
+              @if (user.role !== 'ADMIN') {
+                <button class="btn btn-sm btn-outline-primary" (click)="promote(user)">Promote to admin</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

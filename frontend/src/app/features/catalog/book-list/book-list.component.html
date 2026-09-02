@@ -1,0 +1,90 @@
+<div class="catalog-page">
+  <div class="container">
+    <div class="catalog-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="catalog-icon">📖</div>
+        <div>
+          <h2 class="mb-0">Books</h2>
+          <p class="text-muted mb-0">Browse the catalog or search across titles and authors.</p>
+        </div>
+      </div>
+    </div>
+
+    <form class="catalog-search" (ngSubmit)="search()">
+      <div class="catalog-search-input">
+        <span class="catalog-search-icon">🔍</span>
+        <input
+          type="search"
+          placeholder="Search by title or author... (also supports বাংলা and phonetic spelling)"
+          [(ngModel)]="query"
+          name="query"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary catalog-btn">Search</button>
+      @if (searching()) {
+        <button type="button" class="btn btn-outline-secondary" (click)="clearSearch()">Clear</button>
+      }
+    </form>
+
+    @if (searching()) {
+      <!-- Search mode: flat, paginated results -->
+      @if (loading()) {
+        <div class="catalog-empty">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-3 mb-0">Searching...</p>
+        </div>
+      } @else if (books().length === 0) {
+        <div class="catalog-empty">
+          <div class="catalog-empty-icon">🔍</div>
+          <h5 class="mb-1">No books found</h5>
+          <p class="text-muted mb-0">Try a different title, author, or spelling.</p>
+        </div>
+      } @else {
+        <p class="text-muted catalog-result-count">{{ totalElements() }} book(s) found</p>
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
+          @for (book of books(); track book.id) {
+            <div class="col">
+              <app-book-card [book]="book"></app-book-card>
+            </div>
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <nav class="mt-4">
+            <ul class="pagination justify-content-center catalog-pagination">
+              @for (p of [].constructor(totalPages()); track $index) {
+                <li class="page-item" [class.active]="$index === page()">
+                  <button class="page-link" (click)="goToPage($index)">{{ $index + 1 }}</button>
+                </li>
+              }
+            </ul>
+          </nav>
+        }
+      }
+    } @else {
+      <!-- Browse mode: books grouped into category sections -->
+      @if (browseLoading()) {
+        <div class="catalog-empty">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-3 mb-0">Loading catalog...</p>
+        </div>
+      } @else {
+        @for (section of sections(); track section.name) {
+          <div class="catalog-section">
+            <div class="catalog-section-header">
+              <h4 class="mb-0">{{ section.name }}</h4>
+              <span class="catalog-section-count">{{ section.books.length }} book(s)</span>
+            </div>
+            <div class="d-flex overflow-auto gap-3 pb-2 category-row">
+              @for (book of section.books; track book.id) {
+                <div class="flex-shrink-0" style="width: 170px;">
+                  <app-book-card [book]="book"></app-book-card>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,138 @@
+<div class="book-detail-page">
+  <div class="container">
+    @if (loading()) {
+      <div class="book-detail-empty">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-3 mb-0">Loading book...</p>
+      </div>
+    } @else if (notFound()) {
+      <div class="book-detail-empty">
+        <div class="book-detail-empty-icon">🔍</div>
+        <h5 class="mb-1">Book not found</h5>
+        <p class="text-muted mb-3">This book doesn't exist or isn't available.</p>
+        <a class="btn btn-primary book-detail-btn" routerLink="/">Browse books</a>
+      </div>
+    } @else if (book(); as b) {
+      <div class="book-hero">
+        <img
+          [src]="b.thumbnailUrl || 'https://placehold.co/240x340?text=No+Cover'"
+          class="book-hero-cover"
+          [alt]="b.title"
+        />
+        <div class="book-hero-body">
+          <h1 class="mb-1">{{ b.title }}</h1>
+          @if (b.authors.length > 0) {
+            <p class="book-hero-authors">
+              by
+              @for (a of b.authors; track a.id; let last = $last) {
+                <a [routerLink]="['/authors', a.id]">{{ a.name }}</a>{{ last ? '' : ', ' }}
+              }
+            </p>
+          }
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <app-star-rating [value]="b.averageRating || 0"></app-star-rating>
+            <span class="text-muted small"
+              >{{ b.averageRating || 'No ratings' }}
+              @if (b.ratingCount > 0) {
+                ({{ b.ratingCount }} rating{{ b.ratingCount === 1 ? '' : 's' }})
+              }</span
+            >
+          </div>
+
+          @if (auth.isLoggedIn()) {
+            <div class="reading-status-group mb-3">
+              <button
+                type="button"
+                class="btn btn-sm reading-status-btn"
+                [class.active]="readingStatus() === 'WANT_TO_READ'"
+                [disabled]="savingReadingStatus()"
+                (click)="setReadingStatus('WANT_TO_READ')"
+              >
+                Want to Read
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm reading-status-btn"
+                [class.active]="readingStatus() === 'CURRENTLY_READING'"
+                [disabled]="savingReadingStatus()"
+                (click)="setReadingStatus('CURRENTLY_READING')"
+              >
+                Currently Reading
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm reading-status-btn"
+                [class.active]="readingStatus() === 'READ'"
+                [disabled]="savingReadingStatus()"
+                (click)="setReadingStatus('READ')"
+              >
+                Read
+              </button>
+            </div>
+          } @else {
+            <p class="text-muted small mb-3"><a routerLink="/login">Log in</a> to add this to your reading list.</p>
+          }
+
+          @if (b.categories.length > 0) {
+            <div>
+              @for (c of b.categories; track c.id) {
+                <span class="book-detail-tag">{{ c.name }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="book-detail-card mb-4">
+        <h5 class="mb-2">Summary</h5>
+        <p class="mb-0 book-detail-summary">{{ b.summary || 'No summary available.' }}</p>
+      </div>
+
+      <div class="book-detail-card">
+        <h5 class="mb-3">Reviews</h5>
+
+        @if (auth.isLoggedIn()) {
+          <div class="book-detail-review-form mb-4">
+            <label class="form-label fw-semibold">{{
+              myExistingReview() ? 'Update your review' : 'Leave a review'
+            }}</label>
+            <app-star-rating [value]="myRating" [interactive]="true" (valueChange)="myRating = $event"></app-star-rating>
+            <textarea
+              class="form-control mt-2"
+              rows="3"
+              placeholder="Optional review text..."
+              [(ngModel)]="myReviewText"
+            ></textarea>
+            <button
+              class="btn btn-primary mt-2 book-detail-btn"
+              [disabled]="myRating < 1 || savingReview()"
+              (click)="submitReview()"
+            >
+              {{ savingReview() ? 'Saving...' : 'Save review' }}
+            </button>
+          </div>
+        } @else {
+          <p class="text-muted"><a routerLink="/login">Log in</a> to leave a review.</p>
+        }
+
+        @if (reviews().length === 0) {
+          <p class="text-muted mb-0">No reviews yet.</p>
+        } @else {
+          <div class="book-detail-review-list">
+            @for (r of reviews(); track r.id) {
+              <div class="book-detail-review">
+                <div class="d-flex justify-content-between align-items-start">
+                  <strong>{{ r.userDisplayName }}</strong>
+                  <app-star-rating [value]="r.rating"></app-star-rating>
+                </div>
+                @if (r.reviewText) {
+                  <p class="mb-0 mt-1 text-muted">{{ r.reviewText }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

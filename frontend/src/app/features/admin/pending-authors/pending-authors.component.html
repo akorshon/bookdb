@@ -1,0 +1,36 @@
+<div class="container">
+  <h2 class="mb-4">Pending Authors</h2>
+
+  @if (loading()) {
+    <p class="text-muted">Loading...</p>
+  } @else if (authors().length === 0) {
+    <p class="text-muted">Nothing pending review.</p>
+  } @else {
+    @for (author of authors(); track author.id) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ author.name }}</h5>
+          <p class="card-subtitle text-muted mb-2">
+            @if (author.nameNative) {
+              {{ author.nameNative }} &middot;
+            }
+            submitted by {{ author.submittedByDisplayName }}
+          </p>
+          <p class="card-text">{{ author.bio }}</p>
+          <div class="d-flex gap-2 align-items-start">
+            <button class="btn btn-success btn-sm" (click)="approve(author)">Approve</button>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              style="max-width: 300px;"
+              placeholder="Rejection reason"
+              [(ngModel)]="rejectReasons[author.id]"
+              name="reason-{{ author.id }}"
+            />
+            <button class="btn btn-danger btn-sm" (click)="reject(author)">Reject</button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

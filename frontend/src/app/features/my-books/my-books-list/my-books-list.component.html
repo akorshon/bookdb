@@ -1,0 +1,69 @@
+<div class="mybooks-page">
+  <div class="container">
+    <div class="mybooks-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="mybooks-icon">📚</div>
+        <div>
+          <h2 class="mb-0">My Books</h2>
+          <p class="text-muted mb-0">Track the books you've submitted and their review status.</p>
+        </div>
+      </div>
+      <a class="btn btn-primary mybooks-btn" routerLink="/my-books/new">+ Submit a book</a>
+    </div>
+
+    @if (loading()) {
+      <div class="mybooks-empty">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="text-muted mt-3 mb-0">Loading your books...</p>
+      </div>
+    } @else if (books().length === 0) {
+      <div class="mybooks-empty">
+        <div class="mybooks-empty-icon">🗒️</div>
+        <h5 class="mb-1">No books yet</h5>
+        <p class="text-muted mb-3">You haven't submitted any books. Start by adding your first one.</p>
+        <a class="btn btn-primary mybooks-btn" routerLink="/my-books/new">+ Submit a book</a>
+      </div>
+    } @else {
+      <div class="book-row-list">
+        @for (book of books(); track book.id) {
+          <div class="book-row">
+            <img
+              [src]="book.thumbnailUrl || 'https://placehold.co/120x160?text=No+Cover'"
+              [alt]="book.title"
+              class="book-row-thumb"
+            />
+            <div class="book-row-body">
+              <div class="d-flex align-items-start justify-content-between gap-2">
+                <a [routerLink]="['/books', book.id]" class="book-row-title">{{ book.title }}</a>
+                <span class="status-pill" [class]="statusClass(book.status)">
+                  <span class="status-dot"></span>{{ statusLabel(book.status) }}
+                </span>
+              </div>
+              <p class="book-row-authors mb-1">{{ authorNames(book) }}</p>
+              @if (book.categories.length > 0) {
+                <div class="mb-2">
+                  @for (c of book.categories; track c.id) {
+                    <span class="badge text-bg-light border me-1">{{ c.name }}</span>
+                  }
+                </div>
+              }
+              @if (book.status === 'REJECTED' && book.rejectionReason) {
+                <div class="rejection-box">
+                  <strong>Rejected:</strong> {{ book.rejectionReason }}
+                </div>
+              }
+              <div class="book-row-actions">
+                @if (book.status === 'DRAFT' || book.status === 'REJECTED') {
+                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/my-books', book.id, 'edit']">Edit</a>
+                  <button class="btn btn-sm btn-primary mybooks-btn" (click)="submit(book)">Submit for review</button>
+                } @else {
+                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/books', book.id]">View book</a>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
