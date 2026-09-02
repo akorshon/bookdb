@@ -145,10 +145,15 @@ public class BookService {
     @Transactional
     public Book update(Long id, BookUpdateRequest request, User caller) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException("Book not found"));
-        requireOwner(book, caller);
-        if (book.getStatus() != BookStatus.DRAFT && book.getStatus() != BookStatus.REJECTED) {
-            throw new IllegalStateException("Only draft or rejected books can be edited");
+        // Admins can edit any book (including published ones) - e.g. to fix a category. A
+        // regular submitter is restricted to their own still-unpublished (draft/rejected) books.
+        if (!isAdmin(caller)) {
+            requireOwner(book, caller);
+            if (book.getStatus() != BookStatus.DRAFT && book.getStatus() != BookStatus.REJECTED) {
+                throw new IllegalStateException("Only draft or rejected books can be edited");
+            }
         }
+        Set<Author> previousAuthors = book.getAuthors();
         String title = TextNormalizer.normalize(request.title().trim());
         book.setTitle(title);
         book.setTitleSearch(Transliteration.toLatinSearchKey(title));
@@ -157,6 +162,15 @@ public class BookService {
         book.setAuthors(resolveOrCreateAuthors(request.authorNames()));
         book.setCategories(categoryService.findOrCreateByNames(request.categories()));
         book.setUpdatedAt(Instant.now());
+        if (book.getStatus() == BookStatus.PUBLISHED) {
+            // Only reachable here for an admin edit (a submitter's own books are always
+            // draft/rejected above) - the published book may already be in cached listings and
+            // on its authors' pages, both keyed off the pre-edit data.
+            evictBookLists();
+            Set<Author> affectedAuthors = new HashSet<>(previousAuthors);
+            affectedAuthors.addAll(book.getAuthors());
+            evictAuthorBooks(affectedAuthors);
+        }
         return book;
     }
 
