@@ -43,3 +43,10 @@ Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
 2026-09-03T00:01:24.895+02:00  WARN 47653 --- [bookdb] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
 2026-09-03T00:01:25.424+02:00  INFO 47653 --- [bookdb] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
 2026-09-03T00:01:25.434+02:00  INFO 47653 --- [bookdb] [           main] c.bookdb.BanglaBookDatabaseApplication   : Started BanglaBookDatabaseApplication in 5.439 seconds (process running for 5.795)
+2026-09-03T00:01:32.792+02:00  INFO 47653 --- [bookdb] [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-03T00:01:32.792+02:00  INFO 47653 --- [bookdb] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-03T00:01:32.795+02:00  INFO 47653 --- [bookdb] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-09-03T00:02:51.934+02:00  WARN 47653 --- [bookdb] [nio-8080-exec-3] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+

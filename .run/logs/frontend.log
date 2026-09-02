@@ -44,3 +44,18 @@ Application bundle generation complete. [2.760 seconds] - 2026-09-02T22:01:31.45
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
   ➜  Local:   http://localhost:4200/
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 20.08 kB | 
+
+Application bundle generation complete. [1.145 seconds] - 2026-09-02T22:06:41.377Z
+
+▲ [WARNING] NG8113: RouterLink is not used within the template of PendingAuthorsComponent [plugin angular-compiler]
+
+    src/app/features/admin/pending-authors/pending-authors.component.ts:10:25:
+      10 │   imports: [FormsModule, RouterLink],
+         ╵                          ~~~~~~~~~~
+
+
+Component update sent to client(s).

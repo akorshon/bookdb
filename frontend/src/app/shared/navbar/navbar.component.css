@@ -11,9 +11,15 @@
   color: transparent;
 }
 
+.app-navbar .navbar-nav {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
 .app-navbar .nav-link {
   color: #4b5563;
   font-weight: 500;
+  white-space: nowrap;
   transition: color 0.12s ease;
 }
 
