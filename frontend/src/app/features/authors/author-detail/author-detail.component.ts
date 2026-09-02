@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth.service';
 import { AuthorService } from '../../../core/author.service';
 import { AuthorResponse, Book } from '../../../core/models';
 import { BookCardComponent } from '../../../shared/book-card/book-card.component';
@@ -21,6 +22,7 @@ export class AuthorDetailComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly authorService: AuthorService,
+    readonly auth: AuthService,
   ) {}
 
   ngOnInit(): void {

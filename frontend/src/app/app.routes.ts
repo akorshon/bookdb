@@ -110,5 +110,13 @@ export const routes: Routes = [
         (m) => m.ScrapeImportComponent,
       ),
   },
+  {
+    path: 'admin/categories',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin/category-management/category-management.component').then(
+        (m) => m.CategoryManagementComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -4,35 +4,35 @@
 
 ❯ Building...
 ✔ Building...
-Initial chunk files | Names                     |  Raw size
-styles.css          | styles                    | 277.52 kB | 
-scripts.js          | scripts                   | 107.73 kB | 
-main.js             | main                      |  19.31 kB | 
-chunk-XDC7UWRL.js   | -                         |   2.56 kB | 
-chunk-CZJLB7T5.js   | -                         |   1.08 kB | 
-polyfills.js        | polyfills                 |  95 bytes | 
+Initial chunk files | Names                         |  Raw size
+styles.css          | styles                        | 277.52 kB | 
+scripts.js          | scripts                       | 107.73 kB | 
+main.js             | main                          |  19.85 kB | 
+chunk-XDC7UWRL.js   | -                             |   2.56 kB | 
+chunk-CZJLB7T5.js   | -                             |   1.08 kB | 
+polyfills.js        | polyfills                     |  95 bytes | 
 
-                    | Initial total             | 408.29 kB
+                    | Initial total                 | 408.83 kB
 
-Lazy chunk files    | Names                     |  Raw size
-chunk-RJFDR24S.js   | api-docs-component        |  38.92 kB | 
-chunk-L4JMCCSZ.js   | book-detail-component     |  37.74 kB | 
-chunk-IDGT6JRS.js   | book-form-component       |  30.85 kB | 
-chunk-ICTOUVQ6.js   | book-list-component       |  26.01 kB | 
-chunk-V27I44RG.js   | my-books-list-component   |  22.54 kB | 
-chunk-KXQUZNLF.js   | my-authors-list-component |  21.64 kB | 
-chunk-MS6AS3ZO.js   | author-form-component     |  17.93 kB | 
-chunk-SZOFB6SX.js   | author-detail-component   |  17.13 kB | 
-chunk-TF56QC7D.js   | register-component        |  17.11 kB | 
-chunk-F5M3WDRZ.js   | author-list-component     |  17.00 kB | 
-chunk-PPQTPZ5N.js   | login-component           |  14.82 kB | 
-chunk-2KVPO345.js   | reading-list-component    |  13.91 kB | 
-chunk-ILZK4QLR.js   | -                         |  12.40 kB | 
-chunk-USVGG3IP.js   | pending-authors-component |   9.97 kB | 
-chunk-J4BKXCHH.js   | pending-books-component   |   9.64 kB | 
-...and 7 more lazy chunks files. Use "--verbose" to show all the files.
+Lazy chunk files    | Names                         |  Raw size
+chunk-RJFDR24S.js   | api-docs-component            |  38.92 kB | 
+chunk-L4JMCCSZ.js   | book-detail-component         |  37.74 kB | 
+chunk-B7T3XCOA.js   | book-form-component           |  29.68 kB | 
+chunk-ICTOUVQ6.js   | book-list-component           |  26.01 kB | 
+chunk-V27I44RG.js   | my-books-list-component       |  22.54 kB | 
+chunk-KXQUZNLF.js   | my-authors-list-component     |  21.64 kB | 
+chunk-RTV5WQOG.js   | author-detail-component       |  18.40 kB | 
+chunk-MS6AS3ZO.js   | author-form-component         |  17.93 kB | 
+chunk-TF56QC7D.js   | register-component            |  17.11 kB | 
+chunk-F5M3WDRZ.js   | author-list-component         |  17.00 kB | 
+chunk-YJG6ZHKN.js   | category-management-component |  14.96 kB | 
+chunk-PPQTPZ5N.js   | login-component               |  14.82 kB | 
+chunk-2KVPO345.js   | reading-list-component        |  13.91 kB | 
+chunk-ILZK4QLR.js   | -                             |  12.40 kB | 
+chunk-USVGG3IP.js   | pending-authors-component     |   9.97 kB | 
+...and 9 more lazy chunks files. Use "--verbose" to show all the files.
 
-Application bundle generation complete. [2.887 seconds] - 2026-09-02T21:38:21.668Z
+Application bundle generation complete. [2.760 seconds] - 2026-09-02T22:01:31.453Z
 
 ▲ [WARNING] NG8113: RouterLink is not used within the template of PendingAuthorsComponent [plugin angular-compiler]
 

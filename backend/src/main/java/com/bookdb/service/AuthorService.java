@@ -6,6 +6,7 @@ import com.bookdb.dto.AuthorDtos.AuthorUpdateRequest;
 import com.bookdb.dto.BookDtos.BookResponse;
 import com.bookdb.model.Author;
 import com.bookdb.model.AuthorStatus;
+import com.bookdb.model.Book;
 import com.bookdb.model.BookStatus;
 import com.bookdb.model.Role;
 import com.bookdb.model.User;
@@ -15,6 +16,8 @@ import com.bookdb.util.TextNormalizer;
 import com.bookdb.web.ForbiddenException;
 import com.bookdb.web.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -28,11 +31,12 @@ import java.util.Locale;
 
 /**
  * Read-only cached lookups + the author submission/moderation flow, mirroring
- * {@code BookService}. See the plan's design note: an author is only ever editable while
- * DRAFT/REJECTED, which (combined with {@code BookService.resolveOrCreateAuthors} only
- * linking PUBLISHED authors to books) guarantees a PUBLISHED author's data can't change
- * after being embedded in a cached {@code BookResponse}/{@code bookLists}/{@code authorBooks}
- * entry - so none of those caches need to be evicted here.
+ * {@code BookService}. An author is normally only editable while DRAFT/REJECTED, which
+ * (combined with {@code BookService.resolveOrCreateAuthors} only linking PUBLISHED authors
+ * to books) would mean a PUBLISHED author's data can't change after being embedded in a
+ * cached {@code BookResponse}/{@code bookLists}/{@code authorBooks}/{@code authors} entry -
+ * except an admin can also edit an already-PUBLISHED author (see {@link #update}), so those
+ * caches do need eviction in that case.
  */
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
+    private final CacheManager cacheManager;
 
     @Cacheable("authors")
     @Transactional(readOnly = true)
@@ -102,10 +107,22 @@ public class AuthorService {
     @Transactional
     public Author update(Long id, AuthorUpdateRequest request, User caller) {
         Author author = authorRepository.findById(id).orElseThrow(() -> new NotFoundException("Author not found"));
-        requireOwner(author, caller);
-        requireEditable(author);
+        // Admins can edit any author (including published ones) - e.g. to fix a bio. A regular
+        // submitter is restricted to their own still-unpublished (draft/rejected) authors.
+        if (!isAdmin(caller)) {
+            requireOwner(author, caller);
+            requireEditable(author);
+        }
         applyFields(author, request.name(), request.nameNative(), request.bio());
         author.setUpdatedAt(Instant.now());
+        if (author.getStatus() == AuthorStatus.PUBLISHED) {
+            // Only reachable here for an admin edit (a submitter's own authors are always
+            // draft/rejected above) - the published author's name/nameNative/slug/imageUrl may
+            // already be embedded (via AuthorSummary) in cached bookLists/bookById/authorBooks
+            // entries for their books, and the author itself in the "authors" list cache.
+            evictAuthorsList();
+            evictBookCachesFor(author);
+        }
         return author;
     }
 
@@ -162,6 +179,30 @@ public class AuthorService {
         author.setRejectionReason(reason);
         author.setUpdatedAt(Instant.now());
         return author;
+    }
+
+    private void evictAuthorsList() {
+        Cache authors = cacheManager.getCache("authors");
+        if (authors != null) {
+            authors.clear();
+        }
+    }
+
+    private void evictBookCachesFor(Author author) {
+        Cache bookLists = cacheManager.getCache("bookLists");
+        if (bookLists != null) {
+            bookLists.clear();
+        }
+        Cache authorBooks = cacheManager.getCache("authorBooks");
+        if (authorBooks != null) {
+            authorBooks.evict(author.getId());
+        }
+        Cache bookById = cacheManager.getCache("bookById");
+        if (bookById != null) {
+            for (Book book : bookRepository.findDistinctByAuthors_Id(author.getId())) {
+                bookById.evict(book.getId());
+            }
+        }
     }
 
     private void applyFields(Author author, String name, String nameNative, String bio) {

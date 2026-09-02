@@ -20,7 +20,12 @@
           [alt]="a.name"
         />
         <div class="author-hero-body">
-          <h1 class="mb-0">{{ a.name }}</h1>
+          <div class="d-flex align-items-start justify-content-between gap-2">
+            <h1 class="mb-0">{{ a.name }}</h1>
+            @if (auth.isAdmin()) {
+              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/my-authors', a.id, 'edit']">Edit</a>
+            }
+          </div>
           @if (a.nameNative) {
             <p class="author-hero-native">{{ a.nameNative }}</p>
           }

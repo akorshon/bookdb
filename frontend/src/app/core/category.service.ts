@@ -10,4 +10,12 @@ export class CategoryService {
   list(): Observable<CategorySummary[]> {
     return this.http.get<CategorySummary[]>('/api/categories');
   }
+
+  create(name: string): Observable<CategorySummary> {
+    return this.http.post<CategorySummary>('/api/admin/categories', { name });
+  }
+
+  update(id: number, name: string): Observable<CategorySummary> {
+    return this.http.put<CategorySummary>(`/api/admin/categories/${id}`, { name });
+  }
 }

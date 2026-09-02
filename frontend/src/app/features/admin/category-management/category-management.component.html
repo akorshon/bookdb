@@ -1,0 +1,66 @@
+<div class="container">
+  <h2 class="mb-4">Categories</h2>
+
+  @if (error()) {
+    <div class="alert alert-danger py-2">{{ error() }}</div>
+  }
+
+  <div class="d-flex gap-2 mb-4" style="max-width: 400px">
+    <input
+      class="form-control"
+      placeholder="New category name"
+      [(ngModel)]="newName"
+      (keyup.enter)="add()"
+    />
+    <button class="btn btn-primary text-nowrap" [disabled]="adding() || !newName.trim()" (click)="add()">
+      {{ adding() ? 'Adding...' : 'Add' }}
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">Loading...</p>
+  } @else if (categories().length === 0) {
+    <p class="text-muted">No categories yet.</p>
+  } @else {
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of categories(); track category.id) {
+          <tr>
+            @if (editingId === category.id) {
+              <td>
+                <input
+                  class="form-control form-control-sm"
+                  [(ngModel)]="editName"
+                  (keyup.enter)="saveEdit(category)"
+                />
+              </td>
+              <td class="text-end">
+                <button
+                  class="btn btn-sm btn-primary me-2"
+                  [disabled]="saving() || !editName.trim()"
+                  (click)="saveEdit(category)"
+                >
+                  {{ saving() ? 'Saving...' : 'Save' }}
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" [disabled]="saving()" (click)="cancelEdit()">
+                  Cancel
+                </button>
+              </td>
+            } @else {
+              <td>{{ category.name }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-secondary" (click)="startEdit(category)">Rename</button>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
