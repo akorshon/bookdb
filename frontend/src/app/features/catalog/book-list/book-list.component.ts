@@ -1,15 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../../core/book.service';
-import { Book } from '../../../core/models';
+import { Book, CategorySection } from '../../../core/models';
 import { BookCardComponent } from '../../../shared/book-card/book-card.component';
-
-interface CategorySection {
-  name: string;
-  books: Book[];
-}
-
-const UNCATEGORIZED = 'Uncategorized';
 
 @Component({
   selector: 'app-book-list',
@@ -19,7 +12,7 @@ const UNCATEGORIZED = 'Uncategorized';
   styleUrl: './book-list.component.css',
 })
 export class BookListComponent implements OnInit {
-  // Browse mode (no search active): all published books grouped into category sections.
+  // Browse mode (no search active): published books grouped into category sections, each capped.
   sections = signal<CategorySection[]>([]);
   browseLoading = signal(true);
 
@@ -61,36 +54,15 @@ export class BookListComponent implements OnInit {
 
   private loadSections(): void {
     this.browseLoading.set(true);
-    // The catalog is small enough (a few hundred books) to fetch in one page and group
-    // client-side, rather than adding a dedicated grouped-by-category backend endpoint.
-    this.bookService.list('', 0, 500).subscribe({
+    // Server-side grouped and capped (see BookController.sections) - the browse page only ever
+    // needs a preview per category, not the whole catalog fetched and grouped client-side.
+    this.bookService.sections().subscribe({
       next: (res) => {
-        this.sections.set(this.groupByCategory(res.content));
+        this.sections.set(res);
         this.browseLoading.set(false);
       },
       error: () => this.browseLoading.set(false),
     });
-  }
-
-  private groupByCategory(books: Book[]): CategorySection[] {
-    const byCategory = new Map<string, Book[]>();
-    for (const book of books) {
-      const names = book.categories.length > 0 ? book.categories.map((c) => c.name) : [UNCATEGORIZED];
-      for (const name of names) {
-        const list = byCategory.get(name) ?? [];
-        list.push(book);
-        byCategory.set(name, list);
-      }
-    }
-    const sections = [...byCategory.entries()]
-      .filter(([name]) => name !== UNCATEGORIZED)
-      .map(([name, list]) => ({ name, books: list }))
-      .sort((a, b) => b.books.length - a.books.length);
-    const uncategorized = byCategory.get(UNCATEGORIZED);
-    if (uncategorized) {
-      sections.push({ name: UNCATEGORIZED, books: uncategorized });
-    }
-    return sections;
   }
 
   private load(): void {

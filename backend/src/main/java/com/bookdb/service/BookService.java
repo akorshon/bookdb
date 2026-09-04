@@ -4,6 +4,8 @@ import com.bookdb.dto.BookDtos.BookCreateRequest;
 import com.bookdb.dto.BookDtos.BookResponse;
 import com.bookdb.dto.BookDtos.BookUpdateRequest;
 import com.bookdb.dto.BookDtos.CachedBookPage;
+import com.bookdb.dto.BookDtos.CategorySection;
+import com.bookdb.dto.CategorySummary;
 import com.bookdb.model.Author;
 import com.bookdb.model.Book;
 import com.bookdb.model.BookStatus;
@@ -21,12 +23,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -85,6 +89,43 @@ public class BookService {
         Page<Book> page = findPublished(query, pageable);
         List<BookResponse> content = page.getContent().stream().map(BookResponse::from).toList();
         return new CachedBookPage(content, page.getTotalElements());
+    }
+
+    /**
+     * Cached, DTO-returning data for the browse page: one row per category that has at least one
+     * published book (most-populous first, "Uncategorized" last), each capped to
+     * {@code booksPerSection} books - not the full catalog fetched-and-grouped client-side. Keeps
+     * the browse page's payload and image count bounded regardless of how large the catalog
+     * grows, instead of shipping every published book (and rendering every cover) on every visit.
+     * Cached the same way as {@link #findPublishedResponses}: caller-independent, redacted by the
+     * controller per request.
+     */
+    @Cacheable(value = "bookLists", key = "'sections|' + #booksPerSection")
+    @Transactional(readOnly = true)
+    public List<CategorySection> findBrowseSections(int booksPerSection) {
+        Pageable firstPage = PageRequest.of(0, booksPerSection);
+        List<CategorySection> sections = new ArrayList<>();
+        for (CategorySummary category : categoryService.listAll()) {
+            long total = bookRepository.countByStatusAndCategories_Id(BookStatus.PUBLISHED, category.id());
+            if (total == 0) {
+                continue;
+            }
+            List<BookResponse> books = bookRepository
+                    .findByStatusAndCategories_Id(BookStatus.PUBLISHED, category.id(), firstPage)
+                    .getContent().stream().map(BookResponse::from).toList();
+            sections.add(new CategorySection(category.name(), total, books));
+        }
+        sections.sort((a, b) -> Long.compare(b.totalElements(), a.totalElements()));
+
+        // Uncategorized always goes last, regardless of size - it's a catch-all bucket, not a
+        // real category, so it shouldn't compete with real categories for top billing.
+        long uncategorizedTotal = bookRepository.countByStatusAndCategoriesIsEmpty(BookStatus.PUBLISHED);
+        if (uncategorizedTotal > 0) {
+            List<BookResponse> books = bookRepository.findByStatusAndCategoriesIsEmpty(BookStatus.PUBLISHED, firstPage)
+                    .getContent().stream().map(BookResponse::from).toList();
+            sections.add(new CategorySection("Uncategorized", uncategorizedTotal, books));
+        }
+        return sections;
     }
 
     /**

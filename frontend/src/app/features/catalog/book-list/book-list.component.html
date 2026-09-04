@@ -73,7 +73,7 @@
           <div class="catalog-section">
             <div class="catalog-section-header">
               <h4 class="mb-0">{{ section.name }}</h4>
-              <span class="catalog-section-count">{{ section.books.length }} book(s)</span>
+              <span class="catalog-section-count">{{ section.totalElements }} book(s)</span>
             </div>
             <div class="d-flex overflow-auto gap-3 pb-2 category-row">
               @for (book of section.books; track book.id) {

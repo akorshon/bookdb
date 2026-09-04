@@ -27,6 +27,14 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findDistinctByStatusAndAuthors_NameNativeContainingIgnoreCase(
             BookStatus status, String authorNameNative, Pageable pageable);
 
+    Page<Book> findByStatusAndCategories_Id(BookStatus status, Long categoryId, Pageable pageable);
+
+    long countByStatusAndCategories_Id(BookStatus status, Long categoryId);
+
+    Page<Book> findByStatusAndCategoriesIsEmpty(BookStatus status, Pageable pageable);
+
+    long countByStatusAndCategoriesIsEmpty(BookStatus status);
+
     List<Book> findBySubmittedBy_Id(Long userId);
 
     boolean existsByIdAndStatus(Long id, BookStatus status);

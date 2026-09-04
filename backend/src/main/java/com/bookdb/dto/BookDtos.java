@@ -101,9 +101,10 @@ public final class BookDtos {
          * Books"/the admin queue). Everyone else (including anonymous visitors, e.g. the public
          * API) gets a trimmed response; {@code edition} and {@code detailUrl} (the scraped
          * source-site link - nothing in the UI links to it) are dropped for the same audience
-         * too, as unused clutter in the public shape. Note {@code status} is safe to null out here even
-         * though {@link #isVisibleTo} reads it - that check always runs on the pre-redaction
-         * response, never on this trimmed copy.
+         * too, as unused clutter in the public shape. {@code source}/{@code status} are always
+         * removed from this public shape (for every caller, including owner/admin). Note
+         * {@code status} is safe to null out here even though {@link #isVisibleTo} reads it -
+         * that check always runs on the pre-redaction response, never on this trimmed copy.
          *
          * <p>This is a pure transform of an already-built {@code BookResponse}, deliberately
          * separate from {@link #from(Book)} - callers should build/fetch (and cache) the
@@ -116,7 +117,12 @@ public final class BookDtos {
                     && submittedByUserId.equals(caller.getId());
             boolean isAdmin = caller != null && caller.getRole() == Role.ADMIN;
             if (isSubmitter || isAdmin) {
-                return this;
+                return new BookResponse(
+                        id, title, edition, thumbnailUrl, summary,
+                        detailUrl, null, null, authors, categories,
+                        averageRating, ratingCount,
+                        submittedByUserId, submittedByDisplayName,
+                        rejectionReason, createdAt, updatedAt);
             }
             return new BookResponse(
                     id, title, null, thumbnailUrl, summary,
@@ -134,5 +140,17 @@ public final class BookDtos {
      * {@code PageImpl} by the caller once read back.
      */
     public record CachedBookPage(List<BookResponse> content, long totalElements) {
+    }
+
+    /**
+     * One category's row on the browse page: a capped {@code books} preview (see
+     * {@code BookController.sections}) plus the category's true {@code totalElements}, so the UI
+     * can show an accurate "N book(s)" count without having to fetch every book in the category.
+     */
+    public record CategorySection(String name, long totalElements, List<BookResponse> books) {
+
+        public CategorySection redactFor(User caller) {
+            return new CategorySection(name, totalElements, books.stream().map(b -> b.redactFor(caller)).toList());
+        }
     }
 }

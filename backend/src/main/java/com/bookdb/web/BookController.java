@@ -4,6 +4,7 @@ import com.bookdb.dto.BookDtos.BookCreateRequest;
 import com.bookdb.dto.BookDtos.BookResponse;
 import com.bookdb.dto.BookDtos.BookUpdateRequest;
 import com.bookdb.dto.BookDtos.CachedBookPage;
+import com.bookdb.dto.BookDtos.CategorySection;
 import com.bookdb.model.Book;
 import com.bookdb.model.User;
 import com.bookdb.service.BookService;
@@ -34,6 +35,18 @@ public class BookController {
         CachedBookPage cached = bookService.findPublishedResponses(query, pageable);
         List<BookResponse> redacted = cached.content().stream().map(r -> r.redactFor(caller)).toList();
         return new PageImpl<>(redacted, pageable, cached.totalElements());
+    }
+
+    /**
+     * Browse page data: published books grouped into category sections, each capped to {@code size}
+     * books (default 20, clamped to [1, 50]) instead of returning the whole catalog for the client
+     * to group - see {@link BookService#findBrowseSections}.
+     */
+    @GetMapping("/books/sections")
+    public List<CategorySection> sections(@RequestParam(defaultValue = "20") int size,
+                                           @AuthenticationPrincipal User caller) {
+        int clamped = Math.min(Math.max(size, 1), 50);
+        return bookService.findBrowseSections(clamped).stream().map(s -> s.redactFor(caller)).toList();
     }
 
     @GetMapping("/books/{id}")

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Book, BookFormValue, BookStatus, PageResponse } from './models';
+import { Book, BookFormValue, BookStatus, CategorySection, PageResponse } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
@@ -13,6 +13,11 @@ export class BookService {
       url += `&query=${encodeURIComponent(query.trim())}`;
     }
     return this.http.get<PageResponse<Book>>(url);
+  }
+
+  /** Browse-page data: published books grouped into category sections, each capped to `size` books. */
+  sections(size = 20): Observable<CategorySection[]> {
+    return this.http.get<CategorySection[]>(`/api/books/sections?size=${size}`);
   }
 
   get(id: number): Observable<Book> {

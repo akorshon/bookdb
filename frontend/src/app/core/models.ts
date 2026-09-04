@@ -63,6 +63,13 @@ export interface Book {
   updatedAt: string | null;
 }
 
+/** One row of GET /api/books/sections: a capped preview of a category's books, plus its true count. */
+export interface CategorySection {
+  name: string;
+  totalElements: number;
+  books: Book[];
+}
+
 export interface BookFormValue {
   title: string;
   authorNames: string[];
