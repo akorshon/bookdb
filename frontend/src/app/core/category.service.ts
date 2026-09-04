@@ -18,4 +18,8 @@ export class CategoryService {
   update(id: number, name: string): Observable<CategorySummary> {
     return this.http.put<CategorySummary>(`/api/admin/categories/${id}`, { name });
   }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/admin/categories/${id}`);
+  }
 }

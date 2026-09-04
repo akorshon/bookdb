@@ -26,4 +26,10 @@ public class AdminCategoryController {
     public CategorySummary rename(@PathVariable Long id, @Valid @RequestBody CategoryUpdateRequest request) {
         return CategorySummary.from(categoryService.rename(id, request));
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        categoryService.delete(id);
+    }
 }

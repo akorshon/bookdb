@@ -21,6 +21,8 @@ export class CategoryManagementComponent implements OnInit {
   editName = '';
   saving = signal(false);
 
+  deletingId: number | null = null;
+
   constructor(private readonly categoryService: CategoryService) {}
 
   ngOnInit(): void {
@@ -74,6 +76,24 @@ export class CategoryManagementComponent implements OnInit {
       error: (err) => {
         this.saving.set(false);
         this.error.set(err.error?.message || 'Could not update category.');
+      },
+    });
+  }
+
+  delete(category: CategorySummary): void {
+    if (!window.confirm(`Delete category "${category.name}"? This cannot be undone.`)) {
+      return;
+    }
+    this.error.set(null);
+    this.deletingId = category.id;
+    this.categoryService.delete(category.id).subscribe({
+      next: () => {
+        this.deletingId = null;
+        this.load();
+      },
+      error: (err) => {
+        this.deletingId = null;
+        this.error.set(err.error?.message || 'Could not delete category.');
       },
     });
   }

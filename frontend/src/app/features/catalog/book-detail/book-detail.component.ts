@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { BookService } from '../../../core/book.service';
 import { Book, ReadingStatus, Review } from '../../../core/models';
@@ -28,8 +28,12 @@ export class BookDetailComponent implements OnInit {
   readingStatus = signal<ReadingStatus | null>(null);
   savingReadingStatus = signal(false);
 
+  deleting = signal(false);
+  deleteError = signal<string | null>(null);
+
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly bookService: BookService,
     private readonly reviewService: ReviewService,
     private readonly readingListService: ReadingListService,
@@ -113,5 +117,21 @@ export class BookDetailComponent implements OnInit {
 
   myExistingReview(): Review | undefined {
     return this.reviews().find((r) => r.userId === this.auth.currentUser()?.id);
+  }
+
+  deleteBook(): void {
+    const b = this.book();
+    if (!b || !window.confirm(`Delete "${b.title}"? This cannot be undone.`)) {
+      return;
+    }
+    this.deleteError.set(null);
+    this.deleting.set(true);
+    this.bookService.adminDelete(b.id).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err) => {
+        this.deleting.set(false);
+        this.deleteError.set(err.error?.message || 'Could not delete book.');
+      },
+    });
   }
 }

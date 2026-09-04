@@ -52,4 +52,8 @@ export class AuthorService {
   adminReject(id: number, reason: string): Observable<AuthorResponse> {
     return this.http.post<AuthorResponse>(`/api/admin/authors/${id}/reject`, { reason });
   }
+
+  adminDelete(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/admin/authors/${id}`);
+  }
 }

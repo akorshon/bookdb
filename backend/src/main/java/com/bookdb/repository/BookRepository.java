@@ -38,4 +38,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findBySubmittedBy_Id(Long userId);
 
     boolean existsByIdAndStatus(Long id, BookStatus status);
+
+    boolean existsByAuthors_Id(Long authorId);
+
+    List<Book> findDistinctByCategories_Id(Long categoryId);
 }

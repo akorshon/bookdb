@@ -57,4 +57,8 @@ export class BookService {
   reject(id: number, reason: string): Observable<Book> {
     return this.http.post<Book>(`/api/admin/books/${id}/reject`, { reason });
   }
+
+  adminDelete(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/admin/books/${id}`);
+  }
 }

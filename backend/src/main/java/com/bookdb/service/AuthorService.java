@@ -54,7 +54,7 @@ public class AuthorService {
                 .toList();
     }
 
-    @Cacheable(value = "authorById", key = "#id")
+    @Cacheable(value = "authorById", key = "#id", unless = "#result == null")
     @Transactional(readOnly = true)
     public AuthorResponse findResponseById(Long id) {
         return authorRepository.findById(id).map(AuthorResponse::from).orElse(null);
@@ -179,6 +179,21 @@ public class AuthorService {
         author.setRejectionReason(reason);
         author.setUpdatedAt(Instant.now());
         return author;
+    }
+
+    /** Admin-only. Blocked if any book still references this author (see {@code AdminAuthorController}). */
+    @CacheEvict(value = "authors", allEntries = true)
+    @Transactional
+    public void delete(Long id) {
+        Author author = authorRepository.findById(id).orElseThrow(() -> new NotFoundException("Author not found"));
+        if (bookRepository.existsByAuthors_Id(id)) {
+            throw new IllegalStateException("Cannot delete an author who still has books");
+        }
+        authorRepository.delete(author);
+        Cache authorById = cacheManager.getCache("authorById");
+        if (authorById != null) {
+            authorById.evict(id);
+        }
     }
 
     private void evictAuthorsList() {

@@ -23,9 +23,22 @@
           <div class="d-flex align-items-start justify-content-between gap-2">
             <h1 class="mb-0">{{ a.name }}</h1>
             @if (auth.isAdmin()) {
-              <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/my-authors', a.id, 'edit']">Edit</a>
+              <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/my-authors', a.id, 'edit']">Edit</a>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  [disabled]="deleting()"
+                  (click)="deleteAuthor()"
+                >
+                  {{ deleting() ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
             }
           </div>
+          @if (deleteError()) {
+            <div class="alert alert-danger py-2">{{ deleteError() }}</div>
+          }
           @if (a.nameNative) {
             <p class="author-hero-native">{{ a.nameNative }}</p>
           }

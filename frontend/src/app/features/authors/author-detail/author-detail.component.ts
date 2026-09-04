@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { AuthorService } from '../../../core/author.service';
 import { AuthorResponse, Book } from '../../../core/models';
@@ -19,8 +19,12 @@ export class AuthorDetailComponent implements OnInit {
   booksLoading = signal(true);
   notFound = signal(false);
 
+  deleting = signal(false);
+  deleteError = signal<string | null>(null);
+
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly authorService: AuthorService,
     readonly auth: AuthService,
   ) {}
@@ -43,6 +47,22 @@ export class AuthorDetailComponent implements OnInit {
         this.booksLoading.set(false);
       },
       error: () => this.booksLoading.set(false),
+    });
+  }
+
+  deleteAuthor(): void {
+    const a = this.author();
+    if (!a || !window.confirm(`Delete "${a.name}"? This cannot be undone.`)) {
+      return;
+    }
+    this.deleteError.set(null);
+    this.deleting.set(true);
+    this.authorService.adminDelete(a.id).subscribe({
+      next: () => this.router.navigate(['/authors']),
+      error: (err) => {
+        this.deleting.set(false);
+        this.deleteError.set(err.error?.message || 'Could not delete author.');
+      },
     });
   }
 }

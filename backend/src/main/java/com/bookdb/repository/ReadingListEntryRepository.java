@@ -11,4 +11,6 @@ public interface ReadingListEntryRepository extends JpaRepository<ReadingListEnt
     Optional<ReadingListEntry> findByBook_IdAndUser_Id(Long bookId, Long userId);
 
     List<ReadingListEntry> findByUser_IdOrderByUpdatedAtDesc(Long userId);
+
+    void deleteByBook_Id(Long bookId);
 }

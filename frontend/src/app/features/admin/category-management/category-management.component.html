@@ -55,7 +55,14 @@
             } @else {
               <td>{{ category.name }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-outline-secondary" (click)="startEdit(category)">Rename</button>
+                <button class="btn btn-sm btn-outline-secondary me-2" (click)="startEdit(category)">Rename</button>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  [disabled]="deletingId === category.id"
+                  (click)="delete(category)"
+                >
+                  {{ deletingId === category.id ? 'Deleting...' : 'Delete' }}
+                </button>
               </td>
             }
           </tr>

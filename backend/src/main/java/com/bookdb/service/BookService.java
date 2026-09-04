@@ -12,6 +12,8 @@ import com.bookdb.model.BookStatus;
 import com.bookdb.model.User;
 import com.bookdb.repository.AuthorRepository;
 import com.bookdb.repository.BookRepository;
+import com.bookdb.repository.ReadingListEntryRepository;
+import com.bookdb.repository.ReviewRepository;
 import com.bookdb.util.TextNormalizer;
 import com.bookdb.util.Transliteration;
 import com.bookdb.web.ForbiddenException;
@@ -43,6 +45,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CategoryService categoryService;
+    private final ReviewRepository reviewRepository;
+    private final ReadingListEntryRepository readingListEntryRepository;
     private final CacheManager cacheManager;
 
     /**
@@ -135,7 +139,7 @@ public class BookService {
      * {@code status}/{@code submittedByUserId}, both already present here.
      * Returns {@code null} for a missing id (not cached, since {@code cache-null-values=false}).
      */
-    @Cacheable(value = "bookById", key = "#id")
+    @Cacheable(value = "bookById", key = "#id", unless = "#result == null")
     @Transactional(readOnly = true)
     public BookResponse findResponseById(Long id) {
         return bookRepository.findById(id).map(BookResponse::from).orElse(null);
@@ -227,6 +231,28 @@ public class BookService {
         book.setRejectionReason(null);
         book.setUpdatedAt(Instant.now());
         return book;
+    }
+
+    /**
+     * Admin-only. Reviews and reading-list entries have a NOT NULL, uncascaded {@code book_id} FK
+     * and are meaningless without the book, so they're deleted explicitly before the book itself.
+     */
+    @Transactional
+    public void delete(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException("Book not found"));
+        boolean wasPublished = book.getStatus() == BookStatus.PUBLISHED;
+        Set<Author> authors = new HashSet<>(book.getAuthors());
+        reviewRepository.deleteByBook_Id(id);
+        readingListEntryRepository.deleteByBook_Id(id);
+        bookRepository.delete(book);
+        Cache bookById = cacheManager.getCache("bookById");
+        if (bookById != null) {
+            bookById.evict(id);
+        }
+        if (wasPublished) {
+            evictBookLists();
+            evictAuthorBooks(authors);
+        }
     }
 
     public Page<Book> findByStatus(BookStatus status, Pageable pageable) {

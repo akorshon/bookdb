@@ -3,7 +3,9 @@ package com.bookdb.service;
 import com.bookdb.dto.CategoryDtos.CategoryCreateRequest;
 import com.bookdb.dto.CategoryDtos.CategoryUpdateRequest;
 import com.bookdb.dto.CategorySummary;
+import com.bookdb.model.Book;
 import com.bookdb.model.Category;
+import com.bookdb.repository.BookRepository;
 import com.bookdb.repository.CategoryRepository;
 import com.bookdb.util.TextNormalizer;
 import com.bookdb.web.NotFoundException;
@@ -26,6 +28,7 @@ import java.util.Set;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final BookRepository bookRepository;
     private final CacheManager cacheManager;
 
     @Cacheable("categories")
@@ -72,6 +75,23 @@ public class CategoryService {
         category.setName(name);
         evictBookCaches();
         return category;
+    }
+
+    /**
+     * Admin-only. Unlike Author (whose delete refuses while still attached to books), a category
+     * is just a tag - deleting it removes the tag from any books that had it rather than blocking,
+     * so this also evicts the book caches that embed category names (see {@code evictBookCaches}).
+     */
+    @CacheEvict(value = "categories", allEntries = true)
+    @Transactional
+    public void delete(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category not found"));
+        for (Book book : bookRepository.findDistinctByCategories_Id(id)) {
+            book.getCategories().remove(category);
+        }
+        categoryRepository.delete(category);
+        evictBookCaches();
     }
 
     private void evictBookCaches() {
