@@ -1,0 +1,39 @@
+<aside class="app-sidebar">
+  <div>
+    <div class="app-sidebar-title">My Account</div>
+    <ul class="app-sidebar-nav">
+      <li>
+        <a routerLink="/my-books" routerLinkActive="active">My Books</a>
+      </li>
+      <li>
+        <a routerLink="/my-reading-list" routerLinkActive="active">My Reading List</a>
+      </li>
+      <li>
+        <a routerLink="/my-authors" routerLinkActive="active">My Authors</a>
+      </li>
+    </ul>
+  </div>
+
+  @if (auth.isAdmin()) {
+    <div>
+      <div class="app-sidebar-title">Admin</div>
+      <ul class="app-sidebar-nav">
+        <li>
+          <a routerLink="/admin/pending" routerLinkActive="active">Pending Books</a>
+        </li>
+        <li>
+          <a routerLink="/admin/pending-authors" routerLinkActive="active">Pending Authors</a>
+        </li>
+        <li>
+          <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+        </li>
+        <li>
+          <a routerLink="/admin/scrape-import" routerLinkActive="active">Import Scrape</a>
+        </li>
+        <li>
+          <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+        </li>
+      </ul>
+    </div>
+  }
+</aside>
