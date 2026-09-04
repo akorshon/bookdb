@@ -10,6 +10,9 @@
   </div>
   <div class="book-card-body">
     <p class="book-card-title" [title]="book.title">{{ book.title }}</p>
+    @if (book.titleNative) {
+      <p class="book-card-title-native" [title]="book.titleNative">{{ book.titleNative }}</p>
+    }
     <p class="book-card-author">{{ authorNames() }}</p>
     @if (book.categories.length > 0) {
       <div class="book-card-tags">

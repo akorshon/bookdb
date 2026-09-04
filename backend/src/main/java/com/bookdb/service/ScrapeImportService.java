@@ -11,7 +11,6 @@ import com.bookdb.model.BookStatus;
 import com.bookdb.repository.AuthorRepository;
 import com.bookdb.repository.BookRepository;
 import com.bookdb.util.TextNormalizer;
-import com.bookdb.util.Transliteration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -105,7 +104,6 @@ public class ScrapeImportService {
         Book book = bookRepository.findByDetailUrl(scraped.detailUrl()).orElseGet(Book::new);
         String title = TextNormalizer.normalize(scraped.title());
         book.setTitle(title);
-        book.setTitleSearch(Transliteration.toLatinSearchKey(title));
         book.setEdition(TextNormalizer.normalize(scraped.edition()));
         book.setDetailUrl(scraped.detailUrl());
         book.setThumbnailUrl(scraped.thumbnailUrl());

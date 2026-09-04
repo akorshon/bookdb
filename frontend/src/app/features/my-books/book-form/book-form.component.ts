@@ -24,7 +24,7 @@ export class BookFormComponent implements OnInit {
 
   bookId: number | null = null;
   book = signal<Book | null>(null);
-  form: BookFormValue = { title: '', authorNames: [], summary: '', categories: [] };
+  form: BookFormValue = { title: '', titleNative: '', authorNames: [], summary: '', categories: [] };
   authorsText = '';
   categoriesText = '';
   knownCategories = signal<CategorySummary[]>([]);
@@ -57,6 +57,7 @@ export class BookFormComponent implements OnInit {
         this.book.set(b);
         this.form = {
           title: b.title,
+          titleNative: b.titleNative || '',
           authorNames: b.authors.map((a) => a.name),
           summary: b.summary || '',
           categories: b.categories.map((c) => c.name),

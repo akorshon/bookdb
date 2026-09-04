@@ -20,6 +20,17 @@
           <label class="form-label">Title *</label>
           <input type="text" class="form-control" name="title" [(ngModel)]="form.title" required />
         </div>
+        <div class="mb-3">
+          <label class="form-label">Native title</label>
+          <input
+            type="text"
+            class="form-control"
+            name="titleNative"
+            [(ngModel)]="form.titleNative"
+            placeholder="e.g. রঙিন ঘুড়ি"
+          />
+          <div class="form-text">Optional - the title in its native script, if different.</div>
+        </div>
         <div class="mb-3 position-relative">
           <label class="form-label">Author(s) *</label>
           <input

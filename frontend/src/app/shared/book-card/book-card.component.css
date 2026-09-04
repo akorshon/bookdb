@@ -68,6 +68,15 @@
   color: #4f46e5;
 }
 
+.book-card-title-native {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 0.3rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .book-card-author {
   color: #6b7280;
   font-size: 0.8rem;

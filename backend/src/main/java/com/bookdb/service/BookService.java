@@ -15,7 +15,6 @@ import com.bookdb.repository.BookRepository;
 import com.bookdb.repository.ReadingListEntryRepository;
 import com.bookdb.repository.ReviewRepository;
 import com.bookdb.util.TextNormalizer;
-import com.bookdb.util.Transliteration;
 import com.bookdb.web.ForbiddenException;
 import com.bookdb.web.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +49,9 @@ public class BookService {
     private final CacheManager cacheManager;
 
     /**
-     * Searches title, title's Latin phonetic key, author name, and author's native-script name
-     * in that order, returning the first tier with any results - so a query matches regardless
-     * of which script (or transliteration) the title/author happen to be stored in. See
-     * {@link com.bookdb.util.Transliteration} and {@code Author.nameNative} for why this needs
-     * four tiers instead of one "search everything" field.
+     * Searches title, title's native-script variant, author name, and author's native-script
+     * name, in that order (primary/English-ish fields first, native second), returning the first
+     * tier with any results - so a query matches regardless of which field the match lives in.
      */
     public Page<Book> findPublished(String query, Pageable pageable) {
         if (!StringUtils.hasText(query)) {
@@ -66,10 +63,10 @@ public class BookService {
         if (byTitle.hasContent()) {
             return byTitle;
         }
-        Page<Book> byTitleSearch =
-                bookRepository.findByStatusAndTitleSearchContainingIgnoreCase(BookStatus.PUBLISHED, q, pageable);
-        if (byTitleSearch.hasContent()) {
-            return byTitleSearch;
+        Page<Book> byTitleNative =
+                bookRepository.findByStatusAndTitleNativeContainingIgnoreCase(BookStatus.PUBLISHED, q, pageable);
+        if (byTitleNative.hasContent()) {
+            return byTitleNative;
         }
         Page<Book> byAuthorName =
                 bookRepository.findDistinctByStatusAndAuthors_NameContainingIgnoreCase(BookStatus.PUBLISHED, q, pageable);
@@ -170,7 +167,8 @@ public class BookService {
         Book book = new Book();
         String title = TextNormalizer.normalize(request.title().trim());
         book.setTitle(title);
-        book.setTitleSearch(Transliteration.toLatinSearchKey(title));
+        book.setTitleNative(StringUtils.hasText(request.titleNative())
+                ? TextNormalizer.normalize(request.titleNative().trim()) : null);
         book.setEdition(TextNormalizer.normalize(request.edition()));
         book.setSummary(TextNormalizer.normalize(request.summary()));
         book.setAuthors(resolveOrCreateAuthors(request.authorNames()));
@@ -201,7 +199,8 @@ public class BookService {
         Set<Author> previousAuthors = book.getAuthors();
         String title = TextNormalizer.normalize(request.title().trim());
         book.setTitle(title);
-        book.setTitleSearch(Transliteration.toLatinSearchKey(title));
+        book.setTitleNative(StringUtils.hasText(request.titleNative())
+                ? TextNormalizer.normalize(request.titleNative().trim()) : null);
         book.setEdition(TextNormalizer.normalize(request.edition()));
         book.setSummary(TextNormalizer.normalize(request.summary()));
         book.setAuthors(resolveOrCreateAuthors(request.authorNames()));

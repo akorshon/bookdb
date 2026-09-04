@@ -34,12 +34,12 @@ public class Book {
     private String title;
 
     /**
-     * Lowercase, diacritic-free Latin phonetic key derived from {@link #title} (see
-     * {@link com.bookdb.util.Transliteration}), so a Bengali title like "তোমাকে" is findable by
-     * someone typing "tomake". Null for titles that are already Latin-script.
+     * The title in its native script, captured manually (typically via the edit form) when it
+     * differs from {@link #title} - mirrors Author's {@code nameNative} exactly: optional, and
+     * null unless someone has filled it in.
      */
-    @Column(name = "title_search", length = 1000)
-    private String titleSearch;
+    @Column(name = "title_native", length = 1000)
+    private String titleNative;
 
     @Column(length = 200)
     private String edition;

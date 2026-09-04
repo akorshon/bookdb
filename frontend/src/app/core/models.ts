@@ -42,6 +42,8 @@ export interface CategorySummary {
 export interface Book {
   id: number;
   title: string;
+  /** Optional native-script variant of `title`, entered manually - null unless someone has filled it in. */
+  titleNative: string | null;
   /** Null on the public response shape (GET /api/books, /api/books/{id}); present for the owner/admin. */
   edition: string | null;
   thumbnailUrl: string | null;
@@ -72,6 +74,7 @@ export interface CategorySection {
 
 export interface BookFormValue {
   title: string;
+  titleNative: string;
   authorNames: string[];
   summary: string;
   categories: string[];

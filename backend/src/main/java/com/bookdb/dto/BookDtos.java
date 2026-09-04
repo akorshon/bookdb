@@ -18,6 +18,7 @@ public final class BookDtos {
 
     public record BookCreateRequest(
             @NotBlank @Size(max = 1000) String title,
+            @Size(max = 1000) String titleNative,
             @Size(max = 200) String edition,
             @NotEmpty List<@NotBlank @Size(max = 500) String> authorNames,
             @Size(max = 4000) String summary,
@@ -26,6 +27,7 @@ public final class BookDtos {
 
     public record BookUpdateRequest(
             @NotBlank @Size(max = 1000) String title,
+            @Size(max = 1000) String titleNative,
             @Size(max = 200) String edition,
             @NotEmpty List<@NotBlank @Size(max = 500) String> authorNames,
             @Size(max = 4000) String summary,
@@ -39,6 +41,7 @@ public final class BookDtos {
     public record BookResponse(
             Long id,
             String title,
+            String titleNative,
             String edition,
             String thumbnailUrl,
             String summary,
@@ -60,6 +63,7 @@ public final class BookDtos {
             return new BookResponse(
                     b.getId(),
                     b.getTitle(),
+                    b.getTitleNative(),
                     b.getEdition(),
                     b.getThumbnailUrl(),
                     b.getSummary(),
@@ -118,14 +122,14 @@ public final class BookDtos {
             boolean isAdmin = caller != null && caller.getRole() == Role.ADMIN;
             if (isSubmitter || isAdmin) {
                 return new BookResponse(
-                        id, title, edition, thumbnailUrl, summary,
+                        id, title, titleNative, edition, thumbnailUrl, summary,
                         detailUrl, null, null, authors, categories,
                         averageRating, ratingCount,
                         submittedByUserId, submittedByDisplayName,
                         rejectionReason, createdAt, updatedAt);
             }
             return new BookResponse(
-                    id, title, null, thumbnailUrl, summary,
+                    id, title, titleNative, null, thumbnailUrl, summary,
                     null, null, null, authors, categories,
                     averageRating, ratingCount,
                     null, null,

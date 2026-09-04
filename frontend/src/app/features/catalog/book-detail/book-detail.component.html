@@ -21,7 +21,7 @@
         />
         <div class="book-hero-body">
           <div class="d-flex align-items-start justify-content-between gap-2">
-            <h1 class="mb-1">{{ b.title }}</h1>
+            <h1 class="mb-0">{{ b.title }}</h1>
             @if (auth.isAdmin()) {
               <div class="d-flex gap-2">
                 <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/my-books', b.id, 'edit']">Edit</a>
@@ -36,6 +36,9 @@
               </div>
             }
           </div>
+          @if (b.titleNative) {
+            <p class="book-hero-native">{{ b.titleNative }}</p>
+          }
           @if (deleteError()) {
             <div class="alert alert-danger py-2">{{ deleteError() }}</div>
           }
